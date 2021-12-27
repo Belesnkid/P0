@@ -1,6 +1,6 @@
 import Express from "express";
 import { azureClientDao } from "./daos/client-dao-azure";
-import { ClientServices, ClientService } from "./services/client-service";
+import { ClientServices } from "./services/client-service";
 import Client from "./entities/client";
 import Account from "./entities/account";
 import errorHandler from "./errors/error-handler";
@@ -8,8 +8,10 @@ import errorHandler from "./errors/error-handler";
 const app = Express();
 app.use(Express.json());
 
-const clientServices:ClientService = new ClientServices(azureClientDao);
+//instantiating client services for database interraction AND data manipulation of said records
+const clientServices:ClientServices = new ClientServices(azureClientDao);
 
+//gets a list of all client records in the database
 app.get("/clients", async (req,res)  => {
     try{
         const clients:Client[] = await clientServices.retrieveAllClients();
@@ -20,6 +22,8 @@ app.get("/clients", async (req,res)  => {
         errorHandler(error, req, res);
     }
 })
+
+//Creates a new client record in the database
 app.post("/clients", async (req,res) => {
     try{
         const newClient:Client = req.body;
@@ -31,6 +35,8 @@ app.post("/clients", async (req,res) => {
         errorHandler(error, req, res);
     }
 })
+
+//gets a specific client record from the database
 app.get("/clients/:id", async (req, res) => {
     try{
         const myClient:Client = await clientServices.retrieveClientById(req.params.id);
@@ -41,6 +47,8 @@ app.get("/clients/:id", async (req, res) => {
         errorHandler(error, req, res);
     }
 })
+
+//updates a client's information with new information where the id matches in the database
 app.put("/clients/:id", async (req,res) => {
     try{
         const {fname,lname,id,accounts} = req.body;
@@ -53,6 +61,7 @@ app.put("/clients/:id", async (req,res) => {
     }
 })
 
+//deletes client with matching id from the database
 app.delete("/clients/:id", async (req,res) =>{
     try{
         const deletedClient:Client = await clientServices.deleteClient(req.params.id);
@@ -64,6 +73,7 @@ app.delete("/clients/:id", async (req,res) =>{
     }
 })
 
+//add an account to a specific client
 app.post("/clients/:id/accounts", async (req,res) =>{
     try{
         const newAccount:Account = req.body;
@@ -78,6 +88,7 @@ app.post("/clients/:id/accounts", async (req,res) =>{
     }
 })
 
+//gets all client accounts for a specific client
 app.get("/clients/:id/accounts", async (req,res) =>{
     try{
         const accounts:Account[] = await clientServices.retrieveClientAccounts(req.params.id);
@@ -106,4 +117,5 @@ app.get("/clients/:id/accounts", () =>{
 
 })
 
+//Shhh...
 app.listen(3000, ()=> console.log("App has started"));
