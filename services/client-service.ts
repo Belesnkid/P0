@@ -43,7 +43,7 @@ export class ClientServices implements ClientService{
      */
     async addClient(client: Client): Promise<Client> {
         if(client.accounts.length === 0){
-            client.accounts = [{accountName:"First Checking", accountType:"Checking", currentAmount:0}];
+            client.accounts = [{accountName:"First Checking", accountType:"Checking", balance:0}];
         }
         return await this.clientDao.createClient(client);
     }
@@ -124,7 +124,7 @@ export class ClientServices implements ClientService{
         const accounts:Account[] = await this.retrieveClientAccounts(clientId);
         const accountsOver = [];
         for(const a of accounts){
-            if(a.currentAmount >= threshold){
+            if(a.balance >= threshold){
                 accountsOver.push(a);
             }
         }
@@ -140,7 +140,7 @@ export class ClientServices implements ClientService{
         const accounts = await this.retrieveClientAccounts(clientId);
         const accountsOver = [];
         for(const a of accounts){
-            if(a.currentAmount <= threshold){
+            if(a.balance <= threshold){
                 accountsOver.push(a);
             }
         }
@@ -162,15 +162,15 @@ export class ClientServices implements ClientService{
             if(a.accountName === accountName){
                 found = true;
                 if (operation === 'withdraw'){
-                    if(a.currentAmount < diff){
-                        throw new TransactionError(`Insuficient funds: Account Balance: ${a.currentAmount}, withdrawl amount: ${diff}`, `Withdraw ${diff}`);
+                    if(a.balance < diff){
+                        throw new TransactionError(`Insuficient funds: Account Balance: ${a.balance}, withdrawl amount: ${diff}`, `Withdraw ${diff}`);
                     }
                     else{
-                        a.currentAmount -= diff;
+                        a.balance -= diff;
                     }
                 }
                 else if(operation === 'deposit'){
-                    a.currentAmount += diff;
+                    a.balance += diff;
                 }
                 else{
                     throw new TransactionError("Transaction not defined", operation);

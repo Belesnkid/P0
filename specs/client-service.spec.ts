@@ -27,7 +27,7 @@ describe("Client Services Tests", () =>{
         expect(savedClient.fname).toBe(updatedClient.fname);
     });
     it("Should add an account to a specified client",async () => {
-        const newAccount:Account = {accountName:"Holiday Fund", accountType:"Checking", currentAmount:500};
+        const newAccount:Account = {accountName:"Holiday Fund", accountType:"Checking", balance:500};
         savedClient = await clientServices.addAccountToClient(savedClient.id, newAccount);
         expect(savedClient.accounts.length).toBe(2);
     });
@@ -49,7 +49,7 @@ describe("Client Services Tests", () =>{
     });
     it("Should update the balance of a specific account for a specific client",async () => {
         savedClient = await clientServices.updateClientAccountBalance(savedClient.id, savedClient.accounts[0].accountName, "deposit", 500);
-        expect(savedClient.accounts[0].currentAmount).toBe(500);
+        expect(savedClient.accounts[0].balance).toBe(500);
     });
     it("Should remove a specified account from a specified client",async () => {
         const removedAccount:Account = await clientServices.deleteClientAccount(savedClient.id, savedClient.accounts[0].accountName);
