@@ -102,6 +102,26 @@ app.get("/clients/:id/accounts", async (req,res) =>{
             errorHandler(error, req, res);
         }
     }
+    else if (amountLessThan === undefined && amountGreaterThan != undefined){
+        try {
+            const accounts:Account[] = await clientServices.retrieveClientAccountsOver(req.params.id, Number(amountGreaterThan));
+            console.log(`Checking accounts for client with ID ${req.params.id}`);
+            res.status(200);
+            res.send(accounts);
+        } catch(error){
+            errorHandler(error, req, res);
+        }
+    }
+    else if (amountLessThan != undefined && amountGreaterThan === undefined){
+        try{
+            const accounts:Account[] = await clientServices.retrieveClientAccountsUnder(req.params.id, Number(amountLessThan));
+            console.log(`Checking accounts for client with ID ${req.params.id}`);
+            res.status(200);
+            res.send(accounts);
+        } catch(error){
+            errorHandler(error, req, res);
+        }
+    }
     else{
         try{
             const accounts:Account[] = await clientServices.retrieveClientAccounts(req.params.id);
@@ -123,8 +143,6 @@ app.get("/clients/:id/accounts", async (req,res) =>{
         errorHandler(error, req, res)
         }
     }
-
-    
 })
 
 //updates a specific client account balance
@@ -139,7 +157,24 @@ app.patch("/clients/:id/:accountName/:accountAction", async (req,res) =>{
     }
 })
 
+app.get("/clients/:id/:accountName", async (req,res) =>{
+    try{
+        const account:Account = await clientServices.retrieveClientAccount(req.params.id, req.params.accountName);
+        console.log(`Retrieved account ${account} for client with ID ${req.params.id}`);
+        res.status(200);
+        res.send(account);
+    } catch(error){
+        errorHandler(error, req, res);
+    }
+})
 
+app.delete("/clients/:id/:accountName", async (req,res) =>{
+
+})
+
+app.delete("/clients/:id/accounts", async (req,res) =>{
+    
+})
 
 //Shhh...
 app.listen(3000, ()=> console.log("App has started"));
