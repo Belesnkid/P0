@@ -138,13 +138,13 @@ export class ClientServices implements ClientService{
      */
     async retrieveClientAccountsUnder(clientId: string, threshold: number): Promise<Account[]> {
         const accounts = await this.retrieveClientAccounts(clientId);
-        const accountsOver = [];
+        const accountsUnder = [];
         for(const a of accounts){
             if(a.balance <= threshold){
-                accountsOver.push(a);
+                accountsUnder.push(a);
             }
         }
-        return accountsOver;
+        return accountsUnder;
     }
 
     /**Updates the available funds for a given account of a given client

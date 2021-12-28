@@ -89,15 +89,42 @@ app.post("/clients/:id/accounts", async (req,res) =>{
 })
 
 //gets all client accounts for a specific client
+//query route => localhost:3000/clients/:id/accounts?amountLessThan=2000&amountGreaterThan=400
 app.get("/clients/:id/accounts", async (req,res) =>{
-    try{
-        const accounts:Account[] = await clientServices.retrieveClientAccounts(req.params.id);
-        console.log(`Accounts retrieved for client with ID ${req.params.id}`);
-        res.status(200);
-        res.send(accounts);
-    } catch(error){
-        errorHandler(error, req, res);
+    const {amountLessThan,amountGreaterThan} = req.query;
+    if(amountLessThan === undefined && amountGreaterThan === undefined){
+        try{
+            const accounts:Account[] = await clientServices.retrieveClientAccounts(req.params.id);
+            console.log(`Accounts retrieved for client with ID ${req.params.id}`);
+            res.status(200);
+            res.send(accounts);
+        } catch(error){
+            errorHandler(error, req, res);
+        }
     }
+    else{
+        try{
+            const accounts:Account[] = await clientServices.retrieveClientAccounts(req.params.id);
+            const accountsInRange:Account[] = [];
+            console.log(`Accounts retrieved for client with ID ${req.params.id}`);
+            for(let a of accounts){
+                if(a.balance <= Number(amountLessThan) && a.balance >= Number(amountGreaterThan)){
+                    accountsInRange.push(a);
+                }
+            }
+            res.status(201);
+            if (accountsInRange.length === 0){
+                res.send(`There are no accounst with a current balance between ${amountGreaterThan} and ${amountLessThan} for client with ID ${req.params.id}`);
+            }
+            else{
+                res.send(accountsInRange);
+            }
+        } catch(error){
+        errorHandler(error, req, res)
+        }
+    }
+
+    
 })
 
 //updates a specific client account balance
@@ -112,10 +139,7 @@ app.patch("/clients/:id/:accountName/:accountAction", async (req,res) =>{
     }
 })
 
-//query route
-app.get("/clients/:id/accounts", () =>{
 
-})
 
 //Shhh...
 app.listen(3000, ()=> console.log("App has started"));
