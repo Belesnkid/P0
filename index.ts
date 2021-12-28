@@ -157,6 +157,7 @@ app.patch("/clients/:id/:accountName/:accountAction", async (req,res) =>{
     }
 })
 
+//retrieves a specific account from a specific client record
 app.get("/clients/:id/:accountName", async (req,res) =>{
     try{
         const account:Account = await clientServices.retrieveClientAccount(req.params.id, req.params.accountName);
@@ -168,12 +169,26 @@ app.get("/clients/:id/:accountName", async (req,res) =>{
     }
 })
 
+//deletes a specific account from a specific client record or all accounts
 app.delete("/clients/:id/:accountName", async (req,res) =>{
-
-})
-
-app.delete("/clients/:id/accounts", async (req,res) =>{
-    
+    if(req.params.accountName != 'accounts'){
+        try{
+            const deletedAccount:Account = await clientServices.deleteClientAccount(req.params.id,req.params.accountName);
+            res.status(200);
+            res.send(deletedAccount);
+        } catch(error){
+            errorHandler(error, req, res);
+        }
+    }
+    else{
+        try{
+            const deletedAccounts:Account[] = await clientServices.deleteAllClientAccounts(req.params.id);
+            res.status(200);
+            res.send(deletedAccounts);
+        } catch(error){
+            errorHandler(error, req, res);
+        }
+    }
 })
 
 //Shhh...

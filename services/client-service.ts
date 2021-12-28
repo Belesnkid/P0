@@ -1,4 +1,4 @@
-import { AzureClientDAO, ClientDAO } from "../daos/client-dao-azure";
+import { AzureClientDAO } from "../daos/client-dao-azure";
 import Account from "../entities/account";
 import Client from "../entities/client";
 import ResourceNotFoundError from "../errors/resource-not-found-error";
