@@ -101,9 +101,9 @@ app.get("/clients/:id/accounts", async (req,res) =>{
 })
 
 //updates a specific client account balance
-app.patch("/clients/:id/:accountName/:accountAction/:amount", async (req,res) =>{
+app.patch("/clients/:id/:accountName/:accountAction", async (req,res) =>{
     try{
-        const myClient:Client = await clientServices.updateClientAccountBalance(req.params.id, req.params.accountName, req.params.accountAction, Number(req.params.amount));
+        const myClient:Client = await clientServices.updateClientAccountBalance(req.params.id, req.params.accountName, req.params.accountAction, Number(req.body.amount));
         console.log(`Account Updated Successfully for client with ID ${req.params.id}`);
         res.status(201);
         res.send(myClient);
