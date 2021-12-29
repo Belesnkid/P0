@@ -4,6 +4,7 @@ import { ClientServices } from "./services/client-service";
 import Client from "./entities/client";
 import Account from "./entities/account";
 import errorHandler from "./errors/error-handler";
+import TransactionError from "./errors/transaction-error";
 
 const app = Express();
 app.use(Express.json());
@@ -148,10 +149,15 @@ app.get("/clients/:id/accounts", async (req,res) =>{
 //updates a specific client account balance
 app.patch("/clients/:id/:accountName/:accountAction", async (req,res) =>{
     try{
-        const myClient:Client = await clientServices.updateClientAccountBalance(req.params.id, req.params.accountName, req.params.accountAction, Number(req.body.amount));
-        console.log(`Account Updated Successfully for client with ID ${req.params.id}`);
-        res.status(201);
-        res.send(myClient);
+        if (Number(req.body.amount) < 0){
+            throw new TransactionError("Cannot have a negative amount", req.body.amount);
+        }
+        else{
+            const myClient:Client = await clientServices.updateClientAccountBalance(req.params.id, req.params.accountName, req.params.accountAction, Number(req.body.amount));
+            console.log(`Account Updated Successfully for client with ID ${req.params.id}`);
+            res.status(201);
+            res.send(myClient);
+        }
     } catch(error){
         errorHandler(error, req, res);
     }
